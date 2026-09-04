@@ -1,0 +1,18 @@
+# ESP-IDF generated output
+build/
+managed_components/
+dependencies.lock
+
+# Local ESP-IDF configuration and generated files
+sdkconfig
+sdkconfig.old
+
+# Python generated files
+__pycache__/
+*.py[cod]
+
+# Local editor and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,27 @@
+menu "Secure OTA project settings"
+
+config OTA_WIFI_SSID
+    string "Wi-Fi SSID"
+    default "YOUR_WIFI_SSID"
+    help
+        SSID of the Wi-Fi network used by the physical ESP32.
+
+config OTA_WIFI_PASSWORD
+    string "Wi-Fi password"
+    default "YOUR_WIFI_PASSWORD"
+    help
+        Password of the Wi-Fi network used by the physical ESP32.
+
+config OTA_VERSION_URL
+    string "OTA version server URL"
+    default "http://192.168.1.100:8000/version"
+    help
+        URL reachable by the ESP32 on the same LAN as the version server.
+
+config OTA_FIRMWARE_URL
+    string "OTA firmware URL"
+    default "http://192.168.1.100:8000/firmware"
+    help
+        URL of the ESP32 application binary served by the update server.
+
+endmenu
