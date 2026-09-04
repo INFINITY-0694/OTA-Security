@@ -13,7 +13,12 @@
 
 static const char *TAG = "OTA";
 static char current_version[OTA_HTTP_BUFFER_SIZE];
-static char server_version[OTA_HTTP_BUFFER_SIZE];
+
+static void close_http_client(esp_http_client_handle_t client)
+{
+    esp_http_client_close(client);
+    esp_http_client_cleanup(client);
+}
 
 static bool parse_version(const char *version, int *major, int *minor, int *patch)
 {
@@ -157,9 +162,9 @@ static esp_err_t install_firmware(void)
     return ESP_OK;
 }
 
-static esp_err_t http_get_version(void)
+static esp_err_t http_get_version(char *version, size_t version_size)
 {
-    memset(server_version, 0, sizeof(server_version));
+    memset(version, 0, version_size);
 
     esp_http_client_config_t config = {
         .url = CONFIG_OTA_VERSION_URL,
@@ -184,8 +189,7 @@ static esp_err_t http_get_version(void)
     int content_length = esp_http_client_fetch_headers(client);
     if (content_length < 0) {
         ESP_LOGE(TAG, "Failed to fetch HTTP headers");
-        esp_http_client_close(client);
-        esp_http_client_cleanup(client);
+        close_http_client(client);
         return ESP_FAIL;
     }
 
@@ -194,43 +198,42 @@ static esp_err_t http_get_version(void)
 
     if (status != 200) {
         ESP_LOGE(TAG, "Server returned HTTP %d", status);
-        esp_http_client_close(client);
-        esp_http_client_cleanup(client);
+        close_http_client(client);
         return ESP_FAIL;
     }
 
     int total_read = 0;
-    while (total_read < (int)sizeof(server_version) - 1) {
-        int n = esp_http_client_read(client, server_version + total_read,
-                                     sizeof(server_version) - 1 - total_read);
+    while (total_read < (int)version_size - 1) {
+        int n = esp_http_client_read(client, version + total_read,
+                                     version_size - 1 - total_read);
         if (n < 0) {
-            esp_http_client_close(client);
-            esp_http_client_cleanup(client);
+            close_http_client(client);
             return ESP_FAIL;
         }
         if (n == 0) break;
         total_read += n;
     }
-    server_version[total_read] = '\0';
+    version[total_read] = '\0';
 
-    esp_http_client_close(client);
-    esp_http_client_cleanup(client);
+    close_http_client(client);
 
     for (int i = total_read - 1; i >= 0; --i) {
-        if (isspace((unsigned char)server_version[i])) server_version[i] = '\0';
+        if (isspace((unsigned char)version[i])) version[i] = '\0';
         else break;
     }
 
-    return strlen(server_version) ? ESP_OK : ESP_FAIL;
+    return strlen(version) ? ESP_OK : ESP_FAIL;
 }
 
 static void ota_check_once(void)
 {
+    char server_version[OTA_HTTP_BUFFER_SIZE];
+
     ESP_LOGI(TAG, "----------------------------------------");
     ESP_LOGI(TAG, "Checking for firmware update...");
     ESP_LOGI(TAG, "Current firmware: %s", current_version);
 
-    if (http_get_version() != ESP_OK) {
+    if (http_get_version(server_version, sizeof(server_version)) != ESP_OK) {
         ESP_LOGW(TAG, "Update check failed; continuing current firmware.");
         return;
     }
