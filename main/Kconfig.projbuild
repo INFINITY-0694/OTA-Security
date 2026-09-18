@@ -20,7 +20,7 @@ config OTA_VERSION_URL
 
 config OTA_FIRMWARE_URL
     string "OTA firmware URL"
-    default "http://192.168.1.100:8000/firmware"
+    default "http://192.168.1.100:8000/update"
     help
         URL of the ESP32 application binary served by the update server.
 

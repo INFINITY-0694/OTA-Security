@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OTA Control Room</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">ESP32 FIRMWARE OPERATIONS</p>
+        <h1>OTA Control Room</h1>
+      </div>
+      <span class="status"><i></i> Service online</span>
+    </header>
+
+    <section class="hero">
+      <div>
+        <p class="eyebrow">RELEASE CHANNEL / PRODUCTION</p>
+        <h2>Ship firmware with a clear view of every release.</h2>
+        <p class="lede">Publish a version to Blob storage, then let connected ESP32 devices discover it through the signed OTA pipeline.</p>
+      </div>
+      <div class="hero-mark">OTA<br><strong>01</strong></div>
+    </section>
+
+    <section class="metrics" aria-label="Release metrics">
+      <article><span>Current release</span><strong id="version">Loading...</strong><small id="releaseState">Checking API</small></article>
+      <article><span>Device endpoint</span><strong>HTTPS</strong><small>/version + /update</small></article>
+      <article><span>Storage</span><strong>Blob</strong><small>Private upload, public delivery</small></article>
+    </section>
+
+    <section class="panel-grid">
+      <article class="panel release-panel">
+        <div class="panel-heading"><div><p class="eyebrow">RELEASE A FIRMWARE</p><h3>Publish a new image</h3></div><span class="number">01</span></div>
+        <form id="releaseForm">
+          <label>Release version<input name="version" placeholder="6.1.0" pattern="\\d+\\.\\d+\\.\\d+" required></label>
+          <label>Admin token<input name="token" type="password" placeholder="Vercel admin token" required></label>
+          <label>Firmware binary<input name="firmware" type="file" accept=".bin,application/octet-stream" required></label>
+          <button type="submit">Publish release <span>↗</span></button>
+          <p id="formMessage" class="form-message" role="status"></p>
+        </form>
+      </article>
+
+      <article class="panel guide-panel">
+        <p class="eyebrow">DEVICE CONTRACT</p><h3>What the ESP32 sees</h3>
+        <div class="endpoint"><code>GET /version</code><span>Plain-text semantic version</span></div>
+        <div class="endpoint"><code>GET /update</code><span>Validated application binary</span></div>
+        <div class="endpoint"><code>POST /api/release</code><span>Authenticated dashboard upload</span></div>
+        <p class="note">The device never receives dashboard credentials. Only the release API uses the admin token.</p>
+      </article>
+    </section>
+  </main>
+  <script src="/app.js" defer></script>
+</body>
+</html>

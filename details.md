@@ -13,7 +13,7 @@ to the inactive OTA partition, and reboots into the new image.
 | `partitions.csv` | Creates NVS, OTA data, and the two OTA application partitions needed for future OTA updates. |
 | `sdkconfig.defaults` | Sets the ESP32 flash settings and selects `partitions.csv`. |
 | `main/Kconfig.projbuild` | Adds the Wi-Fi credentials and version-server URL settings to ESP-IDF menuconfig. |
-| `server.py` | Runs the local server that provides `GET /version` for the ESP32. |
+| `server.py` | Runs the local server that provides `GET /version` and `GET /update` for the ESP32. |
 | `server_version.txt` | Stores the version returned by the local server. It must match the firmware binary served from `build/`. |
 | `details.md` | Explains the required files in this folder. |
 
@@ -50,8 +50,9 @@ python server.py
 
 Run this on the same computer whose LAN address is configured above. Allow
 Python through the firewall on private networks if the ESP32 cannot connect.
-The ESP32 requests `/version` every 30 seconds. Rebuild the firmware before
-changing `server_version.txt` to a newer version.
+The ESP32 requests `/version` every 30 seconds. When a newer version is
+available, it downloads the firmware from `/update`. Rebuild the firmware
+before changing `server_version.txt` to a newer version.
 
 Useful documentation:
 

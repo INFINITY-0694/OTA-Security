@@ -3,6 +3,7 @@
 #include "esp_app_desc.h"
 #include "esp_log.h"
 #include "nvs_flash.h"
+#include "esp_ota_ops.h"
 #include "wifi_manager.h"
 #include "ota_manager.h"
 
@@ -38,6 +39,18 @@ void app_main(void)
     if (ret != ESP_OK) {
         ESP_LOGE(TAG, "[WIFI] Initialization failed.");
         while (1) vTaskDelay(pdMS_TO_TICKS(1000));
+    }
+
+    const esp_partition_t *running_partition = esp_ota_get_running_partition();
+    esp_ota_img_states_t running_state;
+    if (running_partition &&
+        esp_ota_get_state_partition(running_partition, &running_state) == ESP_OK &&
+        running_state == ESP_OTA_IMG_PENDING_VERIFY) {
+        ESP_LOGI(TAG, "[OTA] New firmware passed startup checks; confirming image.");
+        ret = esp_ota_mark_app_valid_cancel_rollback();
+        if (ret != ESP_OK) {
+            ESP_LOGE(TAG, "[OTA] Failed to confirm firmware: %s", esp_err_to_name(ret));
+        }
     }
 
     ESP_LOGI(TAG, "[OTA] Starting OTA manager...");
