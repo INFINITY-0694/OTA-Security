@@ -18,10 +18,23 @@ config OTA_VERSION_URL
     help
         URL reachable by the ESP32 on the same LAN as the version server.
 
+config OTA_MANIFEST_URL
+    string "OTA signed manifest URL"
+    default "http://192.168.1.100:8000/manifest"
+    help
+        URL of the signed release.json manifest served to the ESP32.
+
 config OTA_FIRMWARE_URL
     string "OTA firmware URL"
     default "http://192.168.1.100:8000/update"
     help
         URL of the ESP32 application binary served by the update server.
+
+config OTA_FACTORY_AES_KEY_HEX
+    string "Factory AES-256 key (initial USB provisioning only)"
+    default ""
+    help
+        Optional 64-hex-character key used once to seed NVS on the factory USB image.
+        Leave empty in all later OTA builds. Never commit this value.
 
 endmenu

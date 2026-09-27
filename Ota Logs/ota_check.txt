@@ -1,0 +1,10 @@
+Selected entries from the successful 6.2.2 to 6.2.3 update session shared in chat.
+The complete monitor transcript was not saved as a workspace file.
+
+I (2577) OTA: Checking signed firmware release; current: 6.2.2
+I (26617) OTA: Verified release: 6.2.3 (918496 bytes)
+I (26617) OTA: New version available: 6.2.2 -> 6.2.3
+I (2657) MAIN: [OTA] New firmware passed startup checks; confirming image.
+I (2677) OTA: Checking signed firmware release; current: 6.2.3
+I (26757) OTA: Verified release: 6.2.3 (918496 bytes)
+I (26757) OTA: No newer release available.

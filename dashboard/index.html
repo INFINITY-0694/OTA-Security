@@ -35,9 +35,11 @@
       <article class="panel release-panel">
         <div class="panel-heading"><div><p class="eyebrow">RELEASE A FIRMWARE</p><h3>Publish a new image</h3></div><span class="number">01</span></div>
         <form id="releaseForm">
-          <label>Release version<input name="version" placeholder="6.1.0" pattern="\\d+\\.\\d+\\.\\d+" required></label>
+          <label>Release version<input name="version" placeholder="6.1.0" pattern="\d+\.\d+\.\d+" required></label>
           <label>Admin token<input name="token" type="password" placeholder="Vercel admin token" required></label>
           <label>Firmware binary<input name="firmware" type="file" accept=".bin,application/octet-stream" required></label>
+          <label>Encrypted release binary<input name="releaseBinary" type="file" accept=".bin,application/octet-stream" required></label>
+          <label>Signed release manifest<input name="release" type="file" accept=".json,application/json" required></label>
           <button type="submit">Publish release <span>↗</span></button>
           <p id="formMessage" class="form-message" role="status"></p>
         </form>
@@ -46,6 +48,7 @@
       <article class="panel guide-panel">
         <p class="eyebrow">DEVICE CONTRACT</p><h3>What the ESP32 sees</h3>
         <div class="endpoint"><code>GET /version</code><span>Plain-text semantic version</span></div>
+        <div class="endpoint"><code>GET /manifest</code><span>Signed release metadata</span></div>
         <div class="endpoint"><code>GET /update</code><span>Validated application binary</span></div>
         <div class="endpoint"><code>POST /api/release</code><span>Authenticated dashboard upload</span></div>
         <p class="note">The device never receives dashboard credentials. Only the release API uses the admin token.</p>

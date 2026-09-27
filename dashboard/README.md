@@ -16,8 +16,14 @@ The deployed endpoints are:
 
 ```text
 GET  /version
+GET  /manifest
 GET  /update
 POST /api/release
 ```
+
+Create `release.json` with `sign_release.py` on the protected release computer.
+Upload the plaintext firmware for hash and size checks, the generated encrypted
+release binary, and its signed chunk manifest. The private signing key is never
+uploaded.
 
 Configure the ESP32 with the deployed HTTPS URLs only after the domain and certificate are active.

@@ -21,3 +21,10 @@ Thumbs.db
 *.pem
 *.key
 secure_boot_signing_key*
+!main/ota_public_key.pem
+device_key.txt
+factory_key.conf
+release.bin
+release.json
+sdkconfig.before-factory
+Ota Logs/Log_File.txt

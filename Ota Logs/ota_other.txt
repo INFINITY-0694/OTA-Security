@@ -1,0 +1,9 @@
+Selected boot and network events from the successful update session shared in chat.
+The complete monitor transcript was not saved as a workspace file.
+
+I (2647) WIFI: Connected successfully!
+I (2647) WIFI: IP address: <DEVICE_IP>
+I (446) boot: Loaded app from partition at offset 0x1a0000
+I (476) app_init: App version: 6.2.3
+I (2647) WIFI: Connected successfully!
+I (2657) MAIN: [OTA] New firmware passed startup checks; confirming image.
