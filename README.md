@@ -23,6 +23,10 @@ complete signed OTA and recovery process on a separate board first. See
 
 ## Per-device encrypted OTA development flow
 
+Production OTA uses the HTTPS endpoints on `ota.divysoni.me`; the device
+validates the server certificate with ESP-IDF's certificate bundle. The local
+`python server.py` service is for LAN development only.
+
 The initial USB-installed factory image seeds a unique 32-byte AES key into the
 device's `ota_keys` NVS namespace. Generate the private provisioning material
 outside the repository:

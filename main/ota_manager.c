@@ -8,6 +8,7 @@
 #include <string.h>
 
 #include "cJSON.h"
+#include "esp_crt_bundle.h"
 #include "esp_http_client.h"
 #include "esp_log.h"
 #include "esp_ota_ops.h"
@@ -136,6 +137,7 @@ static esp_err_t read_http_body(const char *url, char *body, size_t body_size)
     esp_http_client_config_t config = {
         .url = url,
         .method = HTTP_METHOD_GET,
+        .crt_bundle_attach = esp_crt_bundle_attach,
         .timeout_ms = 10000,
         .buffer_size = 1024,
         .buffer_size_tx = 1024,
@@ -365,6 +367,7 @@ static esp_err_t install_encrypted_firmware(const ota_manifest_t *manifest)
     esp_http_client_config_t config = {
         .url = CONFIG_OTA_FIRMWARE_URL,
         .method = HTTP_METHOD_GET,
+        .crt_bundle_attach = esp_crt_bundle_attach,
         .timeout_ms = 10000,
         .buffer_size = OTA_DOWNLOAD_BUFFER_SIZE,
         .buffer_size_tx = 1024,

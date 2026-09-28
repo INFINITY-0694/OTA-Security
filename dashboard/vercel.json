@@ -3,5 +3,10 @@
     "api/*.js": {
       "maxDuration": 60
     }
-  }
+  },
+  "rewrites": [
+    { "source": "/version", "destination": "/api/version" },
+    { "source": "/manifest", "destination": "/api/manifest" },
+    { "source": "/update", "destination": "/api/update" }
+  ]
 }
