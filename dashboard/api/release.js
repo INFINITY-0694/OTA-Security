@@ -2,6 +2,7 @@ import { put } from '@vercel/blob';
 import formidable from 'formidable';
 import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
+import { validateAdminToken } from '../lib/admin-auth.js';
 
 export const config = { api: { bodyParser: false } };
 
@@ -17,8 +18,15 @@ function parseForm(request) {
 
 export default async function handler(request, response) {
   if (request.method !== 'POST') return response.status(405).end();
-  if (request.headers.authorization !== `Bearer ${process.env.OTA_ADMIN_TOKEN}`) {
+  const auth = validateAdminToken(request.headers.authorization);
+  if (auth === 'unconfigured') {
+    return response.status(503).json({ error: 'Admin access is not configured for this deployment' });
+  }
+  if (!auth) {
     return response.status(401).json({ error: 'Unauthorized' });
+  }
+  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    return response.status(503).json({ error: 'Blob storage is not configured for this deployment' });
   }
   try {
     const { fields, files } = await parseForm(request);

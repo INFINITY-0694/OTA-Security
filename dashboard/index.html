@@ -9,50 +9,85 @@
 <body>
   <main class="shell">
     <header class="topbar">
-      <div>
-        <p class="eyebrow">ESP32 FIRMWARE OPERATIONS</p>
-        <h1>OTA Control Room</h1>
-      </div>
-      <span class="status"><i></i> Service online</span>
+      <a class="brand" href="/" aria-label="OTA Control Room home">
+        <span class="brand-mark" aria-hidden="true">O</span>
+        <span><strong>OTA Control Room</strong><small>ESP32 release operations</small></span>
+      </a>
+      <span id="sessionStatus" class="session-status"><i></i> Locked</span>
     </header>
 
-    <section class="hero">
-      <div>
-        <p class="eyebrow">RELEASE CHANNEL / PRODUCTION</p>
-        <h2>Ship firmware with a clear view of every release.</h2>
-        <p class="lede">Publish a version to Blob storage, then let connected ESP32 devices discover it through the signed OTA pipeline.</p>
+    <section id="loginScreen" class="login-layout" aria-labelledby="loginTitle">
+      <div class="login-intro">
+        <p class="eyebrow">PRODUCTION RELEASES</p>
+        <h1 id="loginTitle">Secure firmware publishing.</h1>
+        <p>Sign in to prepare and publish a verified OTA release for connected devices.</p>
+        <div class="login-facts">
+          <span>01 <b>Signed manifest</b></span>
+          <span>02 <b>Encrypted image</b></span>
+          <span>03 <b>Authenticated upload</b></span>
+        </div>
       </div>
-      <div class="hero-mark">OTA<br><strong>01</strong></div>
+      <form id="loginForm" class="login-panel">
+        <p class="eyebrow">ADMIN ACCESS</p>
+        <h2 id="loginHeading">Sign in</h2>
+        <p class="panel-copy">Enter the release admin token configured for this deployment.</p>
+        <label for="adminToken">Admin token</label>
+        <input id="adminToken" name="token" type="password" autocomplete="current-password" required>
+        <button id="loginButton" type="submit">Continue <span aria-hidden="true">&#8594;</span></button>
+        <p id="loginMessage" class="message" role="status" aria-live="polite"></p>
+      </form>
     </section>
 
-    <section class="metrics" aria-label="Release metrics">
-      <article><span>Current release</span><strong id="version">Loading...</strong><small id="releaseState">Checking API</small></article>
-      <article><span>Device endpoint</span><strong>HTTPS</strong><small>/version + /update</small></article>
-      <article><span>Storage</span><strong>Blob</strong><small>Private upload, public delivery</small></article>
-    </section>
+    <section id="releaseWorkspace" hidden aria-labelledby="workspaceTitle">
+      <div class="workspace-heading">
+        <div>
+          <p class="eyebrow">RELEASE CHANNEL / PRODUCTION</p>
+          <h1 id="workspaceTitle">Release management</h1>
+        </div>
+        <button id="logoutButton" class="button-secondary" type="button">Sign out</button>
+      </div>
 
-    <section class="panel-grid">
-      <article class="panel release-panel">
-        <div class="panel-heading"><div><p class="eyebrow">RELEASE A FIRMWARE</p><h3>Publish a new image</h3></div><span class="number">01</span></div>
-        <form id="releaseForm">
-          <label>Release version<input name="version" placeholder="6.1.0" pattern="\d+\.\d+\.\d+" required></label>
-          <label>Admin token<input name="token" type="password" placeholder="Vercel admin token" required></label>
-          <label>Firmware binary<input name="firmware" type="file" accept=".bin,application/octet-stream" required></label>
-          <label>Encrypted release binary<input name="releaseBinary" type="file" accept=".bin,application/octet-stream" required></label>
-          <label>Signed release manifest<input name="release" type="file" accept=".json,application/json" required></label>
-          <button type="submit">Publish release <span>↗</span></button>
-          <p id="formMessage" class="form-message" role="status"></p>
-        </form>
-      </article>
+      <section class="release-status" aria-label="Current release status">
+        <div><span class="status-label">Published version</span><strong id="version">Checking...</strong></div>
+        <p id="releaseState" class="status-note">Connecting to release service</p>
+      </section>
 
-      <article class="panel guide-panel">
-        <p class="eyebrow">DEVICE CONTRACT</p><h3>What the ESP32 sees</h3>
-        <div class="endpoint"><code>GET /version</code><span>Plain-text semantic version</span></div>
-        <div class="endpoint"><code>GET /manifest</code><span>Signed release metadata</span></div>
-        <div class="endpoint"><code>GET /update</code><span>Validated application binary</span></div>
-        <div class="endpoint"><code>POST /api/release</code><span>Authenticated dashboard upload</span></div>
-        <p class="note">The device never receives dashboard credentials. Only the release API uses the admin token.</p>
-      </article>
+      <div class="release-layout">
+        <section class="release-panel" aria-labelledby="publishTitle">
+          <div class="section-heading">
+            <div><p class="eyebrow">NEW RELEASE</p><h2 id="publishTitle">Publish firmware</h2></div>
+            <span class="step-number">01 / 01</span>
+          </div>
+          <form id="releaseForm">
+            <label for="releaseVersion">Release version</label>
+            <input id="releaseVersion" name="version" placeholder="6.2.4" pattern="\d+\.\d+\.\d+" autocomplete="off" required>
+            <p class="field-hint">Use a version newer than the one currently published.</p>
+
+            <label for="firmwareFile">Plain firmware image</label>
+            <input id="firmwareFile" name="firmware" type="file" accept=".bin,application/octet-stream" required>
+
+            <label for="encryptedFile">Encrypted release image</label>
+            <input id="encryptedFile" name="releaseBinary" type="file" accept=".bin,application/octet-stream" required>
+
+            <label for="manifestFile">Signed release manifest</label>
+            <input id="manifestFile" name="release" type="file" accept=".json,application/json" required>
+
+            <button id="publishButton" type="submit">Validate and publish <span aria-hidden="true">&#8594;</span></button>
+            <p id="formMessage" class="message" role="status" aria-live="polite"></p>
+          </form>
+        </section>
+
+        <aside class="release-details" aria-labelledby="deliveryTitle">
+          <p class="eyebrow">DEVICE DELIVERY</p>
+          <h2 id="deliveryTitle">Release endpoints</h2>
+          <dl class="endpoint-list">
+            <div><dt>Version check</dt><dd>GET /version</dd></div>
+            <div><dt>Signed metadata</dt><dd>GET /manifest</dd></div>
+            <div><dt>Encrypted image</dt><dd>GET /update</dd></div>
+          </dl>
+          <p class="security-note">The admin token stays in this browser session and is sent only to the authenticated release API. The ESP32 receives no dashboard credentials.</p>
+        </aside>
+      </div>
     </section>
   </main>
   <script src="/app.js" defer></script>
