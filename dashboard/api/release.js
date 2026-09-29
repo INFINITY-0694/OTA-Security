@@ -25,7 +25,9 @@ export default async function handler(request, response) {
   if (!auth) {
     return response.status(401).json({ error: 'Unauthorized' });
   }
-  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+  const hasBlobCredentials = process.env.BLOB_READ_WRITE_TOKEN ||
+    (process.env.VERCEL_OIDC_TOKEN && process.env.BLOB_STORE_ID);
+  if (!hasBlobCredentials) {
     return response.status(503).json({ error: 'Blob storage is not configured for this deployment' });
   }
   try {
@@ -67,8 +69,21 @@ export default async function handler(request, response) {
         encryptedTotal !== encryptedBytes.length) {
       return response.status(400).json({ error: 'Signed manifest does not match the firmware upload' });
     }
-    const uploaded = await put(`releases/${version}.bin`, encryptedBytes, { access: 'public', addRandomSuffix: false, contentType: 'application/octet-stream' });
-    await put('release.json', JSON.stringify({ ...release, firmwareUrl: uploaded.url }), { access: 'public', addRandomSuffix: false, contentType: 'application/json' });
+    const firmwarePath = `releases/${version}-${digest.slice(0, 16)}.bin`;
+    const uploaded = await put(firmwarePath, encryptedBytes, {
+      access: 'public',
+      addRandomSuffix: false,
+      allowOverwrite: true,
+      contentType: 'application/octet-stream',
+      cacheControlMaxAge: 60,
+    });
+    await put('release.json', JSON.stringify({ ...release, firmwareUrl: uploaded.url }), {
+      access: 'public',
+      addRandomSuffix: false,
+      allowOverwrite: true,
+      contentType: 'application/json',
+      cacheControlMaxAge: 60,
+    });
     return response.status(200).json({ version, size: bytes.length });
   } catch (error) {
     return response.status(500).json({ error: 'Release upload failed' });

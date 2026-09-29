@@ -4,13 +4,17 @@ Vercel-ready dashboard and API for the ESP32 OTA project.
 
 ## Vercel setup
 
-Set the dashboard root directory to `dashboard` and connect a Vercel Blob store. Add this environment variable:
+Set the dashboard root directory to `dashboard` and connect a Vercel Blob store.
+Vercel can provide Blob access through OIDC (`VERCEL_OIDC_TOKEN` and
+`BLOB_STORE_ID`) or the static read-write token (`BLOB_READ_WRITE_TOKEN`). Add
+this additional environment variable for the dashboard login:
 
 ```text
 OTA_ADMIN_TOKEN=<long random value>
 ```
 
-The Blob integration supplies `BLOB_READ_WRITE_TOKEN` automatically.
+The Blob integration supplies the storage credentials when the store is
+connected to this Vercel project and its Production environment.
 
 Add `ota.divysoni.me` to the Vercel project's Domains settings and configure the
 DNS record Vercel provides. Wait until Vercel reports the domain and HTTPS
@@ -30,6 +34,11 @@ Create `release.json` with `sign_release.py` on the protected release computer.
 Upload the plaintext firmware for hash and size checks, the generated encrypted
 release binary, and its signed chunk manifest. The private signing key is never
 uploaded.
+
+Each encrypted image is stored at a version-and-digest-specific immutable path;
+the `release.json` pointer is replaced only after the image upload succeeds.
+Blob writes allow replacing that pointer for later releases and set a short
+cache lifetime so devices discover the current release promptly.
 
 Sign in through the dashboard with the `OTA_ADMIN_TOKEN` value. The token is
 validated by `/api/auth`, kept only in page memory, and sent as a bearer token
